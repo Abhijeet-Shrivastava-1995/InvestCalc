@@ -86,12 +86,25 @@ devMiddleware.waitUntilValid(() => {
 app.get('*/test.json', function (req, res) {
 
   var request = require('sync-request')
-  var response = request('GET', 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=09-Aug-2017&todt=09-Aug-2017')
+  var response = request('GET', 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=07-Aug-2017&todt=07-Aug-2017')
   console.log(response.getBody('utf-8'))
+  
   //parser.parse(mf-name, response.getBody('utf-8') must return JSON Array
   // res.sendFile(__dirname + '/dist/index.html');
   res.json({message: response.getBody('utf-8')})
+  parser(response.getBody)
+  
 })
+
+function parser(servertext){
+  if (servertext.length == 0) {
+    console.log("error : file empty")
+  }
+  for (var i = 0; i < servertext.length; i++)
+  {
+    console.log(servertext[i])
+  }
+}
 
 var server = app.listen(port)
 
