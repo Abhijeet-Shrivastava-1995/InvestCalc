@@ -88,23 +88,49 @@ app.get('*/test.json', function (req, res) {
   var request = require('sync-request')
   var response = request('GET', 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=07-Aug-2017&todt=07-Aug-2017')
   console.log(response.getBody('utf-8'))
+  var data = {}
+  var SKIP_STATE = 'SKIP'
+  var CONSUME_STATE = 'CONSUME'
+  var state = SKIP_STATE;
+  var respText = response.getBody('utf-8')
+
+  if( respText.length != 0) {
+    respText.split("\n").forEach(function(line){
+
+      if(!line) { 
+        state = SKIP_STATE; 
+        return; 
+      }else if(line.trim() === "Axis Mutual Fund"){ 
+        state = CONSUME_STATE; 
+        return; 
+      }else if(state === CONSUME_STATE){
+        var cols = line.split(';');
+        data[cols[1]] = cols[2];
+      }
+      
+    })
+    
+  }
   
-  //parser.parse(mf-name, response.getBody('utf-8') must return JSON Array
-  // res.sendFile(__dirname + '/dist/index.html');
-  res.json({message: response.getBody('utf-8')})
-  parser(response.getBody)
+  
+  res.json(data)
+
   
 })
 
-function parser(servertext){
-  if (servertext.length == 0) {
-    console.log("error : file empty")
-  }
-  for (var i = 0; i < servertext.length; i++)
-  {
-    console.log(servertext[i])
-  }
-}
+// function parser(servertext){
+//   if (servertext.length == 0) {
+//     console.log("error : file empty")
+//   }
+//   for (var i = 0; i < servertext.length; i++)
+//   {
+//     //console.log(servertext[i])
+//     if(servertext[i] == '{') {
+//       console.log('char found')
+      
+//     }
+//   }
+// }
 
 var server = app.listen(port)
 
