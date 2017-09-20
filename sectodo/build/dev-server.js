@@ -87,30 +87,27 @@ app.get('*/test.json', function (req, res) {
 
   var request = require('sync-request')
   var response = request('GET', 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=07-Aug-2017&todt=07-Aug-2017')
-  console.log(response.getBody('utf-8'))
   var data = {}
   var SKIP_STATE = 'SKIP'
   var CONSUME_STATE = 'CONSUME'
   var state = SKIP_STATE;
   var respText = response.getBody('utf-8')
 
-  if( respText.length != 0) {
-    respText.split("\n").forEach(function(line){
-
-      if(!line) { 
-        state = SKIP_STATE; 
-        return; 
-      }else if(line.trim() === "Axis Mutual Fund"){ 
-        state = CONSUME_STATE; 
-        return; 
-      }else if(state === CONSUME_STATE){
-        var cols = line.split(';');
-        data[cols[1]] = cols[2];
-      }
-      
-    })
+  
+  respText.split("\n").forEach(function(line){
+    if(!line) { 
+      state = SKIP_STATE; 
+      return; 
+    }else if(line.trim() === "Axis Mutual Fund"){ 
+      state = CONSUME_STATE; 
+      return; 
+    }else if(state === CONSUME_STATE){
+      var cols = line.split(';');
+      data[cols[1]] = cols[2];
+    }
+  })
     
-  }
+  
   
   
   res.json(data)

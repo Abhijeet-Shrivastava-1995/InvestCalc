@@ -4,7 +4,9 @@
         <div class="col-lg-12 col-md-6 col-sm-4">
           <h1 class="heading">Investment</h1>
           <div class="input-group input-group-icon">
-              <input type="text" placeholder="DD/MM/YYYY">
+          <input type="text" placeholder="">
+          <calendar v-on:dateChanged="changed" v-on:SwitchPreviousMonth="pre" v-on:SwitchNextMonth="next"
+      v-bind:debug="false"/>
           </div>
           <div class="input-group input-group-icon">
               <input type="text" placeholder="Invested Amount">
@@ -41,11 +43,32 @@
 </template>
 
 <<script>
+import calendar from './calendar'
 export default {
+  components: {
+    calendar
+  },
   data () {
     return {
       funds: [],
       funding: []
+    }
+  },
+  methods: {
+    pre (from, to) {
+      console.group('pre month')
+      console.log('from', from)
+      console.log('to', to)
+      console.groupEnd()
+    },
+    next (from, to) {
+      console.group('next month')
+      console.log('from', from)
+      console.log('to', to)
+      console.groupEnd()
+    },
+    changed (to) {
+      console.log('changed to', to)
     }
   },
   created () {
