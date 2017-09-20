@@ -25,6 +25,7 @@
                :data-month="d.month"
                :data-date="d.date"
           >{{d.date}}</div>
+          
         </div>
       </div>
     </div>
@@ -141,6 +142,7 @@
             day: this.today.day
           }
         }
+        console.log(this.date + this.month + this.year)
         return this._activeDate
       },
       weeks: function () {

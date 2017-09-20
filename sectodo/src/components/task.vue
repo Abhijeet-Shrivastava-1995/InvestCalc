@@ -1,4 +1,4 @@
-// <!-- ill be using bootstrap here as well-->
+
 // <template>
 //   <div class="container base">
     

@@ -83,17 +83,24 @@ devMiddleware.waitUntilValid(() => {
 })
 
 // Serve index page
-app.get('*/test.json', function (req, res) {
-
+app.get('*/test.json?', function (req, res) {
+  req.params = {
+    'date': ''
+  }
+  console.log(req)
+  // var query1 = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=' + investdate + '&todt=' + investdate
+  // var query2 = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=17-Sep-2017&totd=17-Sep-2017'
+  var query2 = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=' + req.query.date + '&totd=' + req.query.date
+  
+  console.log(query2)
+ 
   var request = require('sync-request')
-  var response = request('GET', 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=07-Aug-2017&todt=07-Aug-2017')
+  var response = request('GET', query2)
   var data = {}
   var SKIP_STATE = 'SKIP'
   var CONSUME_STATE = 'CONSUME'
   var state = SKIP_STATE;
   var respText = response.getBody('utf-8')
-
-  
   respText.split("\n").forEach(function(line){
     if(!line) { 
       state = SKIP_STATE; 
@@ -106,28 +113,12 @@ app.get('*/test.json', function (req, res) {
       data[cols[1]] = cols[2];
     }
   })
-    
-  
-  
-  
   res.json(data)
-
-  
+ 
 })
 
-// function parser(servertext){
-//   if (servertext.length == 0) {
-//     console.log("error : file empty")
-//   }
-//   for (var i = 0; i < servertext.length; i++)
-//   {
-//     //console.log(servertext[i])
-//     if(servertext[i] == '{') {
-//       console.log('char found')
-      
-//     }
-//   }
-// }
+
+
 
 var server = app.listen(port)
 
@@ -136,4 +127,5 @@ module.exports = {
   close: () => {
     server.close()
   }
+
 }
