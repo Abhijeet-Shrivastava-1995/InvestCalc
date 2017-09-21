@@ -77,7 +77,7 @@ export default {
         function (data) {
           var thatNav = that.todays[that.fundname]
           var thisNav = data.body[that.fundname]
-          console.log((that.amountInvested / thatNav) * thisNav)
+      //    console.log((that.amountInvested / thatNav) * thisNav)
           that.newAmount = (that.amountInvested / thatNav) * thisNav
         })
     }
