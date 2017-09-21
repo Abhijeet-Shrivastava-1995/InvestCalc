@@ -82,6 +82,8 @@ devMiddleware.waitUntilValid(() => {
   _resolve()
 })
 
+
+
 // Serve index page
 app.get('*/test.json?', function (req, res) {
   req.params = {
@@ -101,19 +103,27 @@ app.get('*/test.json?', function (req, res) {
   var CONSUME_STATE = 'CONSUME'
   var state = SKIP_STATE;
   var respText = response.getBody('utf-8')
+  var string = "Axis Dynamic Bond Fund - Direct Plan - Growth Option"
   respText.split("\n").forEach(function(line){
     if(!line) { 
       state = SKIP_STATE; 
       return; 
-    }else if(line.trim() === "Axis Mutual Fund"){ 
+    }else if(line.trim() === "Axis Mutual Fund") { 
       state = CONSUME_STATE; 
       return; 
     }else if(state === CONSUME_STATE){
       var cols = line.split(';');
-      data[cols[1]] = cols[2];
+      //here check whether the fundname param is there in cols[1]
+        if(req.query.fundname == cols[1]) {
+          res.json(cols[2]) // this is the NAV value of the date sent in query of that particular fund
+        }
+        data[cols[1]] = cols[2]; //this has NAV value
+        //data[cols[2]] = cols[1]; //this will store the fund name
+        //therefore cols[1] has the fund name
+      
     }
   })
-  res.json(data)
+ 
  
 })
 
