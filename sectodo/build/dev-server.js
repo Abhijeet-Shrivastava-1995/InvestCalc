@@ -89,21 +89,16 @@ app.get('*/test.json?', function (req, res) {
   req.params = {
     'date': ''
   }
-  console.log(req)
-  // var query1 = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=' + investdate + '&todt=' + investdate
-  // var query2 = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=17-Sep-2017&totd=17-Sep-2017'
   var query2 = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf=53&tp=1&frmdt=' + req.query.date + '&totd=' + req.query.date
-  
   console.log(query2)
  
   var request = require('sync-request')
-  var response = request('GET', query2)
+  var response = request('GET', query2) // for invested date
   var data = {}
   var SKIP_STATE = 'SKIP'
   var CONSUME_STATE = 'CONSUME'
   var state = SKIP_STATE;
-  var respText = response.getBody('utf-8')
-  var string = "Axis Dynamic Bond Fund - Direct Plan - Growth Option"
+  var respText = response.getBody('utf-8') // for invested date
   respText.split("\n").forEach(function(line){
     if(!line) { 
       state = SKIP_STATE; 
@@ -114,21 +109,17 @@ app.get('*/test.json?', function (req, res) {
     }else if(state === CONSUME_STATE){
       var cols = line.split(';');
       //here check whether the fundname param is there in cols[1]
-        if(req.query.fundname == cols[1]) {
-          res.json(cols[2]) // this is the NAV value of the date sent in query of that particular fund
-        }
+        // if(req.query.fundname == cols[1]) {
+        //   res.json(cols[2]) // this is the NAV value of the date sent in query of that particular fund
+        // }
         data[cols[1]] = cols[2]; //this has NAV value
         //data[cols[2]] = cols[1]; //this will store the fund name
         //therefore cols[1] has the fund name
-      
     }
   })
- 
- 
+  res.json(data)  
+    // write something here that will send the data back
 })
-
-
-
 
 var server = app.listen(port)
 

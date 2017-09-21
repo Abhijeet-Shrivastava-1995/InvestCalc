@@ -1,16 +1,10 @@
-<<template>
+<template>
   <div class="container">
       <div class="row">
         <div class="col-lg-12 col-md-6 col-sm-4">
           <h1 class="heading">Investment</h1>
           <form method="GET" action="test.json">
-
           <div class="input-group input-group-icon">
-          <!-- <label >Date of Investment</label> -->
-          <!-- <calendar v-on:dateChanged="changed" v-on:SwitchPreviousMonth="pre"
-           v-on:SwitchNextMonth="next"
-      v-bind:debug="false"/>
-          <p></p> -->
           <input type="text" placeholder="DD-MON-YYYY" v-model="date"/>
           </div> 
           <div class="input-group input-group-icon">
@@ -18,134 +12,74 @@
           </div>
           <div>
             </div>
-            
+            <h3>.....Please choose a fund......</h3>
           <div >
-              <select id="funds" class="select-group" v-model="fundname" v-on:click="diviselect (this)">
-                  <option selected disabled hidden>Choose your fund</option>
-                  <option>Axis Banking & PSU Debt Fund - Bonus Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Daily Dividend Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Direct Plan - Bonus Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Direct Plan - Daily Dividend Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Direct Plan - Growth Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Direct Plan - Monthly Dividend Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Direct Plan - Weekly Dividend Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Growth option</option>
-                  <option>Axis Banking & PSU Debt Fund - Monthly Dividend Option</option>
-                  <option>Axis Banking & PSU Debt Fund - Weekly Dividend option</option>
-                  <option>Axis Corporate Debt Opportunities Fund - Direct Plan Daily Dividend Reinvestment</option>
-                  <option>Axis Corporate Debt Opportunities Fund - Direct Plan Growth</option>
-                  <option>Axis Corporate Debt Opportunities Fund - Direct Plan Monthly Dividend</option>
-                  <option>Axis Corporate Debt Opportunities Fund - Direct Plan Weekly Dividend</option>
-                  <option>Axis Corporate Debt Opportunities Fund - Regular Plan Daily Dividend Reinvestment</option>
-                  <option>Axis Corporate Debt Opportunities Fund - Regular Plan Growth</option> 
-                  <option>Axis Corporate Debt Opportunities Fund - Regular Plan Monthly Dividend</option>
-                  </option>Axis Corporate Debt Opportunities Fund - Regular Plan Weekly Dividend</option>
-                  <option>Axis Dynamic Bond Fund  - Half Yearly Dividend option</option>
-                  <option>Axis Dynamic Bond Fund - Direct Plan - Growth Option</option>
-                  <option>Axis Dynamic Bond Fund - Direct Plan - Half Yearly Dividend Option</option>
+              
+              <select id="funds" class="select-group" v-model="fundname">
+                 <option v-for="fund in fundList" v-bind:key="fund">{{ fund }}</option>
               </select>
-              </div>
-               <!-- <div id="1" style="visibility:hidden">
-              <select  class="select-group">
-                  <option>Bonus Option</option>
-                  <option>Daily Dividend Option</option>
-                  <option>Direct Plan - Bonus Option</option>
-                  <option>Direct Plan - Daily Dividend Option</option>
-                  <option>Direct Plan - Growth Option</option>
-                  <option>Direct Plan - Monthly Dividend Option</option>
-                  <option>Direct Plan - Weekly Dividend Option</option>
-                  <option>Growth option</option>
-                  <option>Monthly Dividend Option</option>
-                  <option>Weekly Dividend option</option>
-                  <option>Direct Plan Daily Dividend Reinvestment</option>
-                  <option>Direct Plan Growth</option>
-                  <option>Direct Plan Monthly Dividend</option>
-                  <option>Direct Plan Weekly Dividend</option>
-                  <option>Regular Plan Daily Dividend Reinvestment</option>
-                  <option>Regular Plan Growth</option>
-                  <option>Regular Plan Weekly Dividend</option>
-                  <option>Half Yearly Dividend option</option>
-                  <option> Direct Plan - Half Yearly Dividend Option</option>
-                  <option>Direct Plan - Quarterly Dividend Option</option>  
-                  <option>Quarterly Dividend Option</option>
-                  <option>Regular Plan - Monthly Dividend</option>
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                  <option></option>
-                  
-                  </select>
-              </div> -->
-               <div>
-              <select class="select-group">
-                  <option></option>
-                  </select>
-              </div>
-            
-               <div >
+          </div>
+            <p v-for="fund in funds" v-bind:key="fund">{{fund}}</p>
+              <div >
                 <input hidden name="fundname" v-model="this.fundname"/>
                  <input hidden name="date" v-model="this.date"/>
-              <input v-on:click="calculate (something, something)" class="calc_button btn-lg btn-success" type="submit" value="Calculate" />
+                <input v-on:click="calculate()" class="calc_button btn-lg btn-success" type="button" value="Calculate" />
           </div>
             <div>
                   <label>Your net worth today is</label>
               </div>
               <p></p>
                <div class="input-group input-group-icon">
-              <input type="text" placeholder="Invested Amount">
+              <input type="text" v-model="newAmount" placeholder="New Amount">
           </div>
           </form>
           </div>
-          
         </div>
     </div>
 </template>
 
 <script>
-import calendar from './calendar'
-
 export default {
-  components: {
-    calendar
-  },
   data () {
     return {
       date: '',
+      serverUrl: '/test.json?date=',
       amountInvested: '',
-      fundname: ''
+      fundname: '',
+      funds: [],
+      todays: {},
+      newAmount: ''
+    }
+  },
+  created () {
+    console.log('there')
+    var date = new Date()
+    date.setDate(new Date().getDate() - 3)
+    this.$http.get(this.serverUrl + this.getFormattedDate(date)).then(
+      function (data) {
+        console.log(data.body)
+        this.todays = data.body
+      })
+  },
+  computed: {
+    fundList () {
+      return Object.keys(this.todays)
     }
   },
   methods: {
-    pre (from, to) {
-      console.group('pre month')
-      console.log('from', from)
-      console.log('to', to)
-      console.groupEnd()
-    },
-    next (from, to) {
-      console.group('next month')
-      console.log('from', from)
-      console.log('to', to)
-      console.groupEnd()
-    },
-    changed (to) {
-      console.log('changed to', to)
-    },
-    calculate (investFundName, investDate) {
-      var today = new Date()
+    getFormattedDate (date) {
       var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-      var date = today.getDate()
-      var mon = months[today.getMonth()]
-      var year = today.getFullYear()
-      var fulldate = date + '-' + mon + '-' + year
-      console.log(fulldate)
+      return date.getDate() + '-' + months[date.getMonth()] + '-' + date.getFullYear()
     },
-    diviselect (sender) {
-      var c = sender.value
-      document.getElementById(c).id = c
-      console.log(c)
-      c.style.visibility = 'visible'
+    calculate () {
+      var that = this
+      this.$http.get(this.serverUrl + this.date).then(
+        function (data) {
+          var thatNav = that.todays[that.fundname]
+          var thisNav = data.body[that.fundname]
+          console.log((that.amountInvested / thatNav) * thisNav)
+          that.newAmount = (that.amountInvested / thatNav) * thisNav
+        })
     }
   }
 }
@@ -155,7 +89,6 @@ export default {
 div{
   display: block;
 }
-
 .row:before, .row:after {
     content: "";
     display: table;
@@ -163,7 +96,6 @@ div{
 input[type="text"]{
   font-size:25px;
 }
-
 .heading {
     text-align: center;
     color: #7ed321;
@@ -175,8 +107,6 @@ input[type="text"]{
     zoom: 1;
     width: 100%;
 }
-
-
 .select-group{
   padding:10px 10px 10px 10px;
   width: 500px;
@@ -196,7 +126,6 @@ label{
   margin-left: 395px;
   font-size: 30px;
 }
-
 body {
   padding: 1em;
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -222,12 +151,10 @@ input{
   transition: all 0.35s ease-in-out;
   text-align: center;
 }
-
 .input-group {
   margin-bottom: 1em;
   zoom: 1;
 }
-
 .container {
   max-width: 38em;
   padding: 1em 3em 2em 3em;
@@ -236,7 +163,6 @@ input{
   border-radius: 4.2px;
   box-shadow: 0px 3px 10px -2px rgba(0, 0, 0, 0.2);
 }
-
 .select-group{
   /* padding:10px 10px 10px 10px; */
   width: 500px;
@@ -247,7 +173,6 @@ input{
   height:50px;
   color: black;
 }
-
 .calc_button{
   margin-left: -10px;
   width: 500px;
@@ -256,6 +181,11 @@ label{
  
     margin-left: 105px;
 }
-
+h3{
+  position: relative;
+  color: black;
+  text-align: center;
+  margin-top: 10px;
+  
+}
 </style>
-
